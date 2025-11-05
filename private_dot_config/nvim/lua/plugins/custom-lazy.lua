@@ -2,8 +2,13 @@ vim.g.snacks_animate = false
 return {
   {
     "ibhagwan/fzf-lua",
-    opts = {
-      git = {
+    opts = function(_, opts)
+      opts.fzf_opts = vim.tbl_deep_extend("force", opts.fzf_opts or {}, {
+        ["--literal"] = true, -- disable regex
+        ["--algo"] = "v2", -- smarter fuzzy scoring
+        ["--exact"] = false, -- allow partial fuzzy match
+      })
+      opts.git = vim.tbl_deep_extend("force", opts.git or {}, {
         commits = {
           preview_pager = "difft",
           cmd = "git log --color --pretty=format:'%C(yellow)%h%Creset %Cgreen(%><(12)%cr%><|(12))%Creset %s %C(blue)<%an>%Creset' <file>",
@@ -11,16 +16,6 @@ return {
         bcommits = { -- For buffer commits (if you use that)
           preview_pager = "difft",
         },
-      },
-    },
-  },
-  {
-    "ibhagwan/fzf-lua",
-    opts = function(_, opts)
-      opts.fzf_opts = vim.tbl_deep_extend("force", opts.fzf_opts or {}, {
-        ["--literal"] = true, -- disable regex
-        ["--algo"] = "v2", -- smarter fuzzy scoring
-        ["--exact"] = false, -- allow partial fuzzy match
       })
       return opts
     end,
