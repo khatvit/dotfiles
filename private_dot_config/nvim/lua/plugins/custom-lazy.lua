@@ -1,6 +1,13 @@
 vim.g.snacks_animate = false
 return {
   {
+    "folke/twilight.nvim",
+    enabled = false,
+    dimming = {
+      alpha = 0.0, -- fully invisible
+    },
+  },
+  {
     "ibhagwan/fzf-lua",
     opts = function(_, opts)
       opts.fzf_opts = vim.tbl_deep_extend("force", opts.fzf_opts or {}, {
@@ -87,6 +94,16 @@ return {
         -- or leave it empty to use the default settings
         -- refer to the configuration section below
       },
+    },
+  },
+  { "Mofiqul/dracula.nvim", opts = {
+    transparent_bg = true,
+    show_end_of_buffer = true,
+  } },
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "dracula",
     },
   },
   {
