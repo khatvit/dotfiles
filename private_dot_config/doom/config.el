@@ -1,7 +1,17 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 (setq shell-file-name (executable-find "bash"))
 (setenv "SHELL" shell-file-name)
-(set-popup-rule! "^\\*doom:term-popup" :side 'right :size 0.35 :select t :quit nil :ttl nil)
+;; (set-popup-rule! "^\\*doom:term-popup" :side 'right :size 0.35 :select t :quit nil :ttl nil)
+(defun vh/apply-frame-opacity (&optional frame)
+  (when (display-graphic-p frame)
+    (set-frame-parameter frame 'alpha '(95 . 95))
+    (set-frame-parameter frame 'alpha-background 95)))
+
+(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
+(add-to-list 'default-frame-alist '(alpha-background . 95))
+(vh/apply-frame-opacity)
+(add-hook 'after-make-frame-functions #'vh/apply-frame-opacity)
+(setq-default vterm-shell (executable-find "fish"))
 
 (after! corfu
   (setq corfu-auto t
@@ -16,6 +26,21 @@
 (when (display-graphic-p)
   (setq doom-font (font-spec :family "Iosevka Nerd Font Mono" :size 19 :weight 'normal)
         doom-variable-pitch-font (font-spec :family "Iosevka Nerd Font Mono" :size 22)))
+
+(defun vh/goto-declaration ()
+  "Jump to declaration when supported, otherwise fall back to definition."
+  (interactive)
+  (cond ((and (bound-and-true-p eglot--managed-mode)
+              (fboundp 'eglot-find-declaration))
+         (call-interactively #'eglot-find-declaration))
+        ((fboundp '+lookup/type-definition)
+         (condition-case nil
+             (call-interactively #'+lookup/type-definition)
+           (error (call-interactively #'+lookup/definition))))
+        (t
+         (call-interactively #'+lookup/definition))))
+
+(map! :nv "gD" #'vh/goto-declaration)
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
@@ -59,6 +84,10 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
+
+(after! better-jumper
+  (map! :m "[[" #'better-jumper-jump-backward
+        :m "]]" #'better-jumper-jump-forward))
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
