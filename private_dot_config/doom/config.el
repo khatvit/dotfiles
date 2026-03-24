@@ -7,6 +7,28 @@
     (set-frame-parameter frame 'alpha '(95 . 95))
     (set-frame-parameter frame 'alpha-background 95)))
 
+(setq-hook! '(js-mode-hook
+              js2-mode-hook
+              typescript-mode-hook
+              tsx-ts-mode-hook
+              typescript-ts-mode-hook
+              web-mode-hook)
+  +format-with-lsp nil)
+
+(after! flycheck-eglot
+  (setq-default flycheck-eglot-exclusive nil))
+
+(after! flycheck
+  (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
+  (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-mode))
+
+(add-hook 'typescript-ts-mode-hook #'flycheck-mode)
+(add-hook 'tsx-ts-mode-hook #'flycheck-mode)
+(add-hook 'typescript-mode-hook #'flycheck-mode)
+(add-hook 'js-mode-hook #'flycheck-mode)
+(add-hook 'js2-mode-hook #'flycheck-mode)
+
 (add-to-list 'default-frame-alist '(alpha . (95 . 95)))
 (add-to-list 'default-frame-alist '(alpha-background . 95))
 (vh/apply-frame-opacity)
